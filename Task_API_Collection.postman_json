@@ -1,11 +1,33 @@
 {
   "info": {
-    "name": "Task Manager API",
+    "name": "Task Manager API - Verified Suite",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000/api"
+    },
+    {
+      "key": "taskId",
+      "value": ""
+    }
+  ],
   "item": [
     {
-      "name": "Create Task",
+      "name": "1. Create Task (Auto-assign ID)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 201 Created\", function () { pm.response.to.have.status(201); });",
+              "pm.test(\"Task ID extracted and saved\", function () { var data = pm.response.json(); pm.expect(data._id).to.be.a(\"string\"); pm.collectionVariables.set(\"taskId\", data._id); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
       "request": {
         "method": "POST",
         "header": [
@@ -16,67 +38,121 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"title\": \"Initial Task\",\n  \"description\": \"Core setup check\",\n  \"status\": \"pending\",\n  \"dueDate\": \"2026-09-30T00:00:00.000Z\"\n}"
+          "raw": "{\"title\":\"Automated Pipeline Task\",\"description\":\"Testing\",\"dueDate\":\"2026-10-01\"}"
         },
         "url": {
-          "raw": "http://localhost:5000/api/tasks",
-          "protocol": "http",
-          "host": ["localhost"],
-          "port": "5000",
-          "path": ["api", "tasks"]
+          "raw": "{{baseUrl}}/tasks",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "tasks"
+          ]
         }
       }
     },
     {
-      "name": "Get All Tasks",
+      "name": "2. Get All Tasks",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200 OK\", function () { pm.response.to.have.status(200); });",
+              "pm.test(\"Response is an array\", function () { pm.expect(pm.response.json()).to.be.an(\"array\"); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
       "request": {
         "method": "GET",
-        "header": [],
         "url": {
-          "raw": "http://localhost:5000/api/tasks",
-          "protocol": "http",
-          "host": ["localhost"],
-          "port": "5000",
-          "path": ["api", "tasks"]
+          "raw": "{{baseUrl}}/tasks",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "tasks"
+          ]
         }
       }
     },
     {
-      "name": "Search Tasks By Title",
+      "name": "3. Search By Title",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200 OK\", function () { pm.response.to.have.status(200); });",
+              "pm.test(\"Matched items returned\", function () { pm.expect(pm.response.json().length).to.be.greaterThan(0); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
       "request": {
         "method": "GET",
-        "header": [],
         "url": {
-          "raw": "http://localhost:5000/api/tasks?title=Initial",
-          "protocol": "http",
-          "host": ["localhost"],
-          "port": "5000",
-          "path": ["api", "tasks"],
+          "raw": "{{baseUrl}}/tasks?title=Pipeline",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "tasks"
+          ],
           "query": [
             {
               "key": "title",
-              "value": "Initial"
+              "value": "Pipeline"
             }
           ]
         }
       }
     },
     {
-      "name": "Get Single Task",
+      "name": "4. Get Single Task By Dynamic ID",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200 OK\", function () { pm.response.to.have.status(200); });",
+              "pm.test(\"Returned correct document\", function () { pm.expect(pm.response.json()._id).to.eql(pm.collectionVariables.get(\"taskId\")); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
       "request": {
         "method": "GET",
-        "header": [],
         "url": {
-          "raw": "http://localhost:5000/api/tasks/TASK_ID_HERE",
-          "protocol": "http",
-          "host": ["localhost"],
-          "port": "5000",
-          "path": ["api", "tasks", "TASK_ID_HERE"]
+          "raw": "{{baseUrl}}/tasks/{{taskId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "tasks",
+            "{{taskId}}"
+          ]
         }
       }
     },
     {
-      "name": "Update Task",
+      "name": "5. Update Task Status",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200 OK\", function () { pm.response.to.have.status(200); });",
+              "pm.test(\"Status updated to completed\", function () { pm.expect(pm.response.json().status).to.eql(\"completed\"); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
       "request": {
         "method": "PUT",
         "header": [
@@ -87,28 +163,45 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"status\": \"completed\"\n}"
+          "raw": "{\"status\":\"completed\"}"
         },
         "url": {
-          "raw": "http://localhost:5000/api/tasks/TASK_ID_HERE",
-          "protocol": "http",
-          "host": ["localhost"],
-          "port": "5000",
-          "path": ["api", "tasks", "TASK_ID_HERE"]
+          "raw": "{{baseUrl}}/tasks/{{taskId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "tasks",
+            "{{taskId}}"
+          ]
         }
       }
     },
     {
-      "name": "Delete Task",
+      "name": "6. Delete Task",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200 OK\", function () { pm.response.to.have.status(200); });",
+              "pm.test(\"Success message returned\", function () { pm.expect(pm.response.json().message).to.eql(\"Task deleted successfully\"); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
       "request": {
         "method": "DELETE",
-        "header": [],
         "url": {
-          "raw": "http://localhost:5000/api/tasks/TASK_ID_HERE",
-          "protocol": "http",
-          "host": ["localhost"],
-          "port": "5000",
-          "path": ["api", "tasks", "TASK_ID_HERE"]
+          "raw": "{{baseUrl}}/tasks/{{taskId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "tasks",
+            "{{taskId}}"
+          ]
         }
       }
     }
