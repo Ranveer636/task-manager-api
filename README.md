@@ -19,17 +19,17 @@ npm install
 node server.js
 
 Endpoints
-POST   /api/tasks          Create a new task
+POST /api/tasks (Create a new task)
 
-GET    /api/tasks          Retrieve all tasks
+GET /api/tasks (Retrieve all tasks)
 
-GET    /api/tasks?title=x  Filter tasks by title
+GET /api/tasks?title=x (Filter tasks by title)
 
-GET    /api/tasks/:id      Retrieve task by ID
+GET /api/tasks/:id (Retrieve task by ID)
 
-PUT    /api/tasks/:id      Update task by ID
+PUT /api/tasks/:id (Update task by ID)
 
-DELETE /api/tasks/:id      Delete task by ID
+DELETE /api/tasks/:id (Delete task by ID)
 
 Testing
 Postman collection included in root: Task_API_Collection.postman_json
