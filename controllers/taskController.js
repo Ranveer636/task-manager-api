@@ -11,12 +11,25 @@ const createTask = async (req, res) => {
 
 const getTasks = async (req, res) => {
   try {
-    const { title } = req.query;
+    const { title, status, sortBy, order } = req.query;
     let query = {};
+
     if (title) {
       query.title = { $regex: title, $options: 'i' };
     }
-    const tasks = await Task.find(query);
+
+    if (status) {
+      query.status = status;
+    }
+
+    const sortOptions = {};
+    if (sortBy) {
+      sortOptions[sortBy] = order === 'desc' ? -1 : 1;
+    } else {
+      sortOptions.createdAt = -1;
+    }
+
+    const tasks = await Task.find(query).sort(sortOptions);
     res.status(200).json(tasks);
   } catch (error) {
     res.status(500).json({ error: error.message });
